@@ -84,7 +84,17 @@
 			}
 			// launch pixel map generation after image has been loaded
 			if(this.image.src !== '') {
-				this.image.onload	=	this.generatePixelMap();
+				var self = this;
+				this.image.onload = function(){
+					// prevent generating of pixels if image is not yet loaded
+					// occured a few times even with onload function of Image
+				  if(!self.image.complete) {
+				      var _this = self;
+				      setTimeout(function() { _this.generatePixelMap(); },500);
+				      return;
+				  }
+				  self.generatePixelMap();
+				} 
 			}
 		},
 		getCanvasRenderer:function() {
@@ -108,14 +118,7 @@
 			return	ctx;
 		},
 		generatePixelMap: function () {
-			// prevent generating of pixels if image is not yet loaded
-			// occured a few times even with onload function of Image
 			
-			if(!this.image.complete) {
-				var _this	=	this;
-				setTimeout(function() { _this.generatePixelMap(); },500);
-				return;
-			}
 			// fetch the canvas renderer
 			this.ctx	=	this.getCanvasRenderer();
 
